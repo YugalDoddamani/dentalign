@@ -94,4 +94,28 @@
   } else {
     document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("in"); });
   }
+ 
+  /* ---------- Restrained hero parallax (homepage only) ---------- */
+  var parallaxImage = document.querySelector("[data-parallax]");
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (parallaxImage && !reduceMotion) {
+    var hero = parallaxImage.closest(".hero");
+    var framePending = false;
+    function updateParallax() {
+      if (!hero) return;
+      var rect = hero.getBoundingClientRect();
+      var offset = Math.max(-36, Math.min(36, -rect.top * 0.075));
+      parallaxImage.style.setProperty("--hero-parallax-y", offset.toFixed(1) + "px");
+      framePending = false;
+    }
+    function requestParallax() {
+      if (!framePending) {
+        framePending = true;
+        window.requestAnimationFrame(updateParallax);
+      }
+    }
+    window.addEventListener("scroll", requestParallax, { passive: true });
+    window.addEventListener("resize", requestParallax, { passive: true });
+    updateParallax();
+  }
 })();
